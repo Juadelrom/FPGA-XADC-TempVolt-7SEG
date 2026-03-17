@@ -172,7 +172,7 @@ Visualización de voltajes internos. Muestra la parte entera y tres decimales ($
 <br>
 <br>
 
-![Modo Voltaje en FPGA](img/Fig _volt_TFG.png)
+![Modo Voltaje en FPGA](img/Fig_volt_TFG.png)
 <br>
 <br>
 
