@@ -20,9 +20,10 @@ El sistema realiza las siguientes etapas:
 A continuación, se muestra el diagrama de bloques completo del sistema, ilustrando la interconexión entre la unidad de control, el XADC y las entidades de la etapa de acondicionamiento:
 
 ---
+
 ![Diagrama de Bloques del Sistema Completo](img/Fig_6_20_TFG.svg)
 
-*(Figura 1: Arquitectura RTL del sistema de adquisición, acondicionamiento y visualización).*
+*Figura 1: Arquitectura RTL del sistema de adquisición, acondicionamiento y visualización.*
 
 ---
 
@@ -33,22 +34,39 @@ El diseño está modularizado en varias entidades VHDL, cada una encargada de un
 ### 1. Bloque IP XADC
 - **Descripción:** Utiliza el convertidor analógico-digital interno de la serie 7 de Xilinx configurado en modo *Continuous Sequence*. Adquiere cíclicamente la Temperatura, VCCINT y VCCBRAM sin necesidad de señales de inicio externas. Se comunica mediante el puerto DRP (Dynamic Reconfiguration Port).
 - **Señales clave:** `daddr_in` (selección de registro), `do_out` (dato crudo), `drdy_out` (dato válido).
+
 ---
+
 ![Diagrama de Bloques del XADC](img/Fig_6_25_TFG.svg)
 
-*(Figura 2: Interfaz de entrada/salida del bloque XADC).*
+*Figura 2: Interfaz de entrada/salida del bloque XADC.*
+
+---
 
 ### 2. Funciones de Transferencia (`func_trans.vhd` y `func_trans_volt.vhd`)
 - **Descripción:** Convierten el valor binario crudo del XADC a unidades físicas reales ($m^\circ C$ y $mV$). Para optimizar el hardware y no usar aritmética de punto flotante, se escala la función matemática por 1000.
   - **Temperatura (`func_trans.vhd`):** Resuelve $Temperatura (m^\circ C) = Valor ADC \times 123 - 273150$.
   - **Voltaje (`func_trans_volt.vhd`):** Resuelve $Voltaje (mV) = (Valor ADC / 4096) \times 3000$.
-  
-![Interfaz Funciones de Transferencia](img/fig9_12_interfaces_transferencia.png) 
-*(Figuras 9 y 12: Interfaces de entrada/salida de los bloques matemáticos).*
+
+---
+![Interfaz Func de Trans Temp](img/Fig_6_28_TFG.svg) 
+
+![Interfaz Func de Trans Volt](img/Fig_6_31_TFG.svg) 
+
+*Figuras 3 y 4: Interfaces de entrada/salida de los bloques matemáticos.*
+
+---
 
 ### 3. Cálculo del Valor Absoluto (`valor_abs.vhd`)
 - **Descripción:** El sensor de temperatura puede registrar valores negativos representados en Complemento a 2. Para evitar que la conversión a BCD genere un dato erróneo, este bloque detecta el bit de signo (MSB). Si es '1', calcula su valor absoluto multiplicándolo por -1.
 - **Salida:** Entrega el valor positivo y una señal `signo_o` para informar al sistema.
+
+---
+![Interfaz Valor Abs](img/Fig_6-34_TFG.svg) 
+
+*Figura 5: Interfaz de entrada/salida del bloque de valor absoluto.*
+
+---
 
 ### 4. Conversión a Formato BCD (`bin2bcd.vhd`)
 - **Descripción:** Transforma el valor binario natural positivo a Decimal Codificado en Binario (BCD) para extraer los dígitos (unidades, decenas, etc.) que irán al display.
