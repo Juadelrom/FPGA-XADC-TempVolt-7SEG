@@ -150,7 +150,7 @@ Visualización de guiones para confirmar que el sistema está encendido pero sin
 <br>
 <br>
 
-![Modo Reposo en FPGA](img/Fig_reposo_TFG.svg)
+![Modo Reposo en FPGA](img/Fig_reposo_TFG.png)
 <br>
 <br>
 
@@ -161,7 +161,7 @@ Visualización de la temperatura interna del silicio con resolución de décimas
 <br>
 <br>
 
-![Modo Temperatura en FPGA](img/Fig_temp_TFG.svg)
+![Modo Temperatura en FPGA](img/Fig_temp_TFG.png)
 <br>
 <br>
 
@@ -172,7 +172,7 @@ Visualización de voltajes internos. Muestra la parte entera y tres decimales ($
 <br>
 <br>
 
-![Modo Voltaje en FPGA](img/Fig_volt_TFG.svg)
+![Modo Voltaje en FPGA](img/Fig_volt_TFG.png)
 <br>
 <br>
 
