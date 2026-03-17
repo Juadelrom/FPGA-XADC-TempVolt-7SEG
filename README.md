@@ -201,3 +201,14 @@ A continuación, se presenta el resumen de utilización del módulo principal (`
 | **Bonded IOB** (Pines) | 21 | 210 | 10% |
 | **XADC** | 1 | 1 | 100% |
 
+## ⚡ Despliegue Rápido (Bitstream Precompilado)
+
+Si deseas probar el sistema directamente en tu placa **Nexys 4 DDR** sin tener que crear el proyecto en Xilinx Vivado, ni realizar los procesos de síntesis e implementación desde cero, tienes a tu disposición el archivo binario ya generado.
+
+En el directorio [`/bitstream`](./bitstream) encontrarás el archivo `.bit` del `adc_top_level`. Este archivo ya incluye todas las restricciones de pines (XDC) y la configuración del bloque IP necesarias para su funcionamiento.
+
+**Pasos para una prueba rápida:**
+1. Conecta y enciende tu placa Nexys 4 DDR.
+2. Abre la herramienta *Hardware Manager* de Xilinx Vivado (o cualquier software compatible como *Digilent Adept*).
+3. Selecciona tu dispositivo y carga el archivo `.bit` que se encuentra en la carpeta `/bitstream`.
+4. ¡Listo! Ya puedes utilizar los interruptores para visualizar la temperatura y los voltajes internos de la FPGA.
