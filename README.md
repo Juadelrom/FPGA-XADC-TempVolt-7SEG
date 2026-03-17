@@ -18,14 +18,14 @@ El sistema realiza las siguientes etapas:
 
 ### Arquitectura Completa del Sistema
 A continuación, se muestra el diagrama de bloques completo del sistema, ilustrando la interconexión entre la unidad de control, el XADC y las entidades de la etapa de acondicionamiento:
-
----
+<br>
+<br>
 
 ![Diagrama de Bloques del Sistema Completo](img/Fig_6_20_TFG.svg)
+<br>
+<br>
 
 *Figura 1: Arquitectura RTL del sistema de adquisición, acondicionamiento y visualización.*
-
----
 
 ## Descripción de los Módulos (Entidades VHDL)
 
@@ -34,46 +34,63 @@ El diseño está modularizado en varias entidades VHDL, cada una encargada de un
 ### 1. Bloque IP XADC
 - **Descripción:** Utiliza el convertidor analógico-digital interno de la serie 7 de Xilinx configurado en modo *Continuous Sequence*. Adquiere cíclicamente la Temperatura, VCCINT y VCCBRAM sin necesidad de señales de inicio externas. Se comunica mediante el puerto DRP (Dynamic Reconfiguration Port).
 - **Señales clave:** `daddr_in` (selección de registro), `do_out` (dato crudo), `drdy_out` (dato válido).
-
----
-
+<br>
+<br
+  
 ![Diagrama de Bloques del XADC](img/Fig_6_25_TFG.svg)
-
+<br>
+<br>
 *Figura 2: Interfaz de entrada/salida del bloque XADC.*
-
----
 
 ### 2. Funciones de Transferencia (`func_trans.vhd` y `func_trans_volt.vhd`)
 - **Descripción:** Convierten el valor binario crudo del XADC a unidades físicas reales ($m^\circ C$ y $mV$). Para optimizar el hardware y no usar aritmética de punto flotante, se escala la función matemática por 1000.
   - **Temperatura (`func_trans.vhd`):** Resuelve $Temperatura (m^\circ C) = Valor ADC \times 123 - 273150$.
   - **Voltaje (`func_trans_volt.vhd`):** Resuelve $Voltaje (mV) = (Valor ADC / 4096) \times 3000$.
+<br>
+<br>
 
----
 ![Interfaz Func de Trans Temp](img/Fig_6_28_TFG.svg) 
+<br>
+<br>
 
 ![Interfaz Func de Trans Volt](img/Fig_6_31_TFG.svg) 
+<br>
+<br>
 
 *Figuras 3 y 4: Interfaces de entrada/salida de los bloques matemáticos.*
 
----
 
 ### 3. Cálculo del Valor Absoluto (`valor_abs.vhd`)
 - **Descripción:** El sensor de temperatura puede registrar valores negativos representados en Complemento a 2. Para evitar que la conversión a BCD genere un dato erróneo, este bloque detecta el bit de signo (MSB). Si es '1', calcula su valor absoluto multiplicándolo por -1.
 - **Salida:** Entrega el valor positivo y una señal `signo_o` para informar al sistema.
+- <br>
+<br>
 
----
 ![Interfaz Valor Abs](img/Fig_6-34_TFG.svg) 
+<br>
+<br>
 
 *Figura 5: Interfaz de entrada/salida del bloque de valor absoluto.*
-
----
 
 ### 4. Conversión a Formato BCD (`bin2bcd.vhd`)
 - **Descripción:** Transforma el valor binario natural positivo a Decimal Codificado en Binario (BCD) para extraer los dígitos (unidades, decenas, etc.) que irán al display.
 - **Algoritmo:** Implementa el eficiente algoritmo iterativo **Double Dabble** (Shift-and-Add-3) utilizando una FSM para el control de los desplazamientos y lógica combinacional para la corrección.
+<br>
+<br>
 
-![Diagrama de flujo del algoritmo Double Dabble](img/fig20_flujo_bcd.png)
-*(Figura 20: Diagrama de flujo del algoritmo Shift-and-Add-3).*
+![Diagrama de flujo del algoritmo Double Dabble](img/Fig_6-39_TFG.svg)
+<br>
+<br>
+
+*Figura 6: Diagrama de flujo del algoritmo Shift-and-Add-3.*
+<br>
+<br>
+
+![Interfaz BIN2BCD](img/Fig_6-41_TFG.svg)
+<br>
+<br>
+
+*Figura 7: Interfaz de entrada/salida de la entidad `bin2bcd.vhd`.*
 
 ### 5. Control del Visualizador 7 Segmentos (`visu7seg.vhd`)
 - **Descripción:** Traduce los dígitos BCD a la codificación de 7 segmentos de ánodo común de la placa Nexys 4 DDR.
@@ -81,15 +98,44 @@ El diseño está modularizado en varias entidades VHDL, cada una encargada de un
   - **Multiplexado temporal:** Emplea un contador para alternar los ánodos a ~190 Hz (1.31 ms).
   - **Estabilización (*Sample & Hold*):** Para evitar "segmentos fantasma" debidos a la altísima frecuencia de actualización del XADC, refresca los datos a mostrar a una tasa estable de ~3 Hz.
   - **Punto decimal y Reposo:** Gestión dinámica del punto decimal según la magnitud leída y representación de guiones (`----`) cuando no hay lecturas activas.
+<br>
+<br>
 
-![Efecto Sample and Hold Visualizador](img/fig32_sample_hold.png)
-*(Figura 32: Cronograma de la lógica de estabilización visual).*
+![Interfaz VISU7SEG](img/Fig_6-44_TFG.svg)
+<br>
+<br>
+
+*Figura 8: Interfaz de entrada/salida del bloque `visu7seg.vhd`.*
+<br>
+<br>
+
+![Registro Contador](img/Fig_6-50_TFG.svg)
+<br>
+<br>
+
+*Figura 9: Registro contador empleado para los eventos temporales.*
+<br>
+<br>
+
+![Efecto Sample and Hold Visualizador](img/Fig_6-51_TFG.svg)
+<br>
+<br>
+
+*Figura 10: Cronograma de la lógica de estabilización visual.*
+
 
 ### 6. Unidad de Control (Top Level) (`adc_top_level.vhd`)
 - **Descripción:** Es la entidad superior que instancia todos los bloques descritos. Contiene un proceso secuencial (`Process P1`) encargado del enrutamiento dinámico de los buses de datos. Dado que la conversión BCD y el display son recursos compartidos, este bloque multiplexa qué dato accede a la etapa final en función de los interruptores de la placa.
+<br>
+<br>
 
+![Interfaz Top Level](img/Fig_6-56_TFG.svg)
+<br>
+<br>
+
+*Figura 11: Interfaz de entrada/salida del Top Level (`adc_top_level.vhd`).*
+ 
 ---
-
 ## Interfaz Física y Modos de Funcionamiento
 
 El control del sistema se realiza físicamente en la placa Nexys 4 DDR a través de interruptores con prioridad (La temperatura prevalece sobre el voltaje).
@@ -101,18 +147,36 @@ El control del sistema se realiza físicamente en la placa Nexys 4 DDR a través
 
 ### 1. Modo Reposo (`SW1=0`, `SW2=0`)
 Visualización de guiones para confirmar que el sistema está encendido pero sin magnitud seleccionada.
+<br>
+<br>
 
-![Modo Reposo en FPGA](img/fig39_modo_reposo.png)
+![Modo Reposo en FPGA](img/Fig_reposo_TFG.svg)
+<br>
+<br>
+
+*Figura 12: Captura del Modo Reposo.*
 
 ### 2. Modo Temperatura (`SW1=1`)
 Visualización de la temperatura interna del silicio con resolución de décimas de grado ($XX.X ^\circ C$).
+<br>
+<br>
 
-![Modo Temperatura en FPGA](img/fig40_modo_temp.png)
+![Modo Temperatura en FPGA](img/Fig_temp_TFG.svg)
+<br>
+<br>
+
+*Figura 13: Captura del Modo Temperatura.*
 
 ### 3. Modo Voltaje (`SW1=0`, `SW2=1`)
 Visualización de voltajes internos. Muestra la parte entera y tres decimales ($X.XXX V$). Dependiendo de `SW3` mostrará VCCINT o VCCBRAM.
+<br>
+<br>
 
-![Modo Voltaje en FPGA](img/fig41_modo_volt.png)
+![Modo Voltaje en FPGA](img/Fig_volt_TFG.svg)
+<br>
+<br>
+
+*Figura 14: Captura del Modo Voltaje.*
 
 ---
 
@@ -120,7 +184,7 @@ Visualización de voltajes internos. Muestra la parte entera y tres decimales ($
 
 Para un análisis exhaustivo del hardware diseñado, las cartas ASM (Algorithmic State Machine), los diagramas temporales y las fórmulas matemáticas de escalado empleadas, por favor consulte la memoria completa del proyecto:
 
-🔗 [**Ver Memoria Descriptiva del Sistema (PDF)**](docs/memoria_sistema.pdf)
+🔗 [**Ver Memoria Descriptiva del Sistema (PDF)**](docs/xadc_7seg_doc.pdf)
 
 ## Utilización de Recursos (FPGA)
 
