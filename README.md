@@ -19,8 +19,10 @@ El sistema realiza las siguientes etapas:
 ### Arquitectura Completa del Sistema
 A continuación, se muestra el diagrama de bloques completo del sistema, ilustrando la interconexión entre la unidad de control, el XADC y las entidades de la etapa de acondicionamiento:
 
-![Diagrama de Bloques del Sistema Completo](img/fig3_arquitectura.png)
-*(Figura 3: Arquitectura RTL del sistema de adquisición, acondicionamiento y visualización).*
+---
+![Diagrama de Bloques del Sistema Completo](img/Fig_6_20_TFG.svg)
+
+*(Figura 1: Arquitectura RTL del sistema de adquisición, acondicionamiento y visualización).*
 
 ---
 
@@ -31,6 +33,10 @@ El diseño está modularizado en varias entidades VHDL, cada una encargada de un
 ### 1. Bloque IP XADC
 - **Descripción:** Utiliza el convertidor analógico-digital interno de la serie 7 de Xilinx configurado en modo *Continuous Sequence*. Adquiere cíclicamente la Temperatura, VCCINT y VCCBRAM sin necesidad de señales de inicio externas. Se comunica mediante el puerto DRP (Dynamic Reconfiguration Port).
 - **Señales clave:** `daddr_in` (selección de registro), `do_out` (dato crudo), `drdy_out` (dato válido).
+---
+![Diagrama de Bloques del XADC](img/Fig_6_25_TFG.svg)
+
+*(Figura 2: Interfaz de entrada/salida del bloque XADC).*
 
 ### 2. Funciones de Transferencia (`func_trans.vhd` y `func_trans_volt.vhd`)
 - **Descripción:** Convierten el valor binario crudo del XADC a unidades físicas reales ($m^\circ C$ y $mV$). Para optimizar el hardware y no usar aritmética de punto flotante, se escala la función matemática por 1000.
